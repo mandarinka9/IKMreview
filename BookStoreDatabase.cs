@@ -30,6 +30,9 @@ namespace BookStore {
       if (_connection == null) {
         throw new InvalidOperationException("Соединение не инициализировано");
       }
+      using var cmd = new NpgsqlCommand(query, _connection);
+      cmd.Parameters.AddRange(parameters);
+      await cmd.ExecuteNonQueryAsync();
 
       var result = new List<List<object>>();
       using var cmd = new NpgsqlCommand(query, _connection);
@@ -54,6 +57,17 @@ namespace BookStore {
       }
       using var cmd = new NpgsqlCommand(query, _connection);
       await cmd.ExecuteNonQueryAsync();
+    }
+
+    /// <summary>
+    /// Выполняет закрытие базы данных
+    /// </summary>
+    public static async Task CloseConnectionAsync() {
+    if (_connection != null) {
+        await _connection.CloseAsync();
+        _connection.Dispose(); 
+        _connection = null;
+        Console.WriteLine("Соединение с базой данных закрыто");
     }
   }
 }
