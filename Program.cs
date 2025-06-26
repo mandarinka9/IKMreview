@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStore {
+  /// <summary>
+  /// Главный класс приложения для управления книжным магазином
+  /// </summary>
   public class Program {
     private static readonly List<string> _tables = new() {
       "authors", "books", "genres", "book_authors"
@@ -24,7 +27,10 @@ namespace BookStore {
       new List<string> { "id", "name" },
       new List<string> { "book_id", "author_id" }
     };
-
+    
+    /// <summary>
+    /// Точка входа в приложение
+    /// </summary>
     public static async Task Main(string[] args) {
       try {
         const string ConnectionString = 
@@ -51,6 +57,9 @@ namespace BookStore {
       }
     }
 
+    /// <summary>
+    /// Настраивает маршруты API
+    /// </summary>
     private static void SetupApiRoutes(WebApplication app) {
       app.MapGet("/api/tables", () => Results.Json(_tables));
 
@@ -146,6 +155,9 @@ namespace BookStore {
       });
     }
 
+    /// <summary>
+    /// Запускает консольный интерфейс управления
+    /// </summary>
     private static async Task RunConsoleInterface() {
       while (true) {
         Console.WriteLine("\nМеню управления книжным магазином");
@@ -166,6 +178,9 @@ namespace BookStore {
       }
     }
 
+    /// <summary>
+    /// Отображает данные из указанной таблицы
+    /// </summary>
     private static async Task ShowData() {
       Console.WriteLine("\nДоступные таблицы:");
       for (int i = 0; i < _tables.Count; i++) {
@@ -184,6 +199,9 @@ namespace BookStore {
       }
     }
 
+    /// <summary>
+    /// Добавляет новую запись в базу данных
+    /// </summary>
     private static async Task AddData() {
       Console.WriteLine("\nДобавление новой записи");
       Console.WriteLine("1. Автор");
@@ -262,6 +280,9 @@ namespace BookStore {
       Console.WriteLine("Книга успешно добавлена");
     }
 
+    /// <summary>
+    /// Обновляет существующую запись в базе данных
+    /// </summary>
     private static async Task UpdateData() {
       var tableIndex = InputHelper.GetInt(
         "Выберите таблицу (1-авторы, 2-книги, 3-жанры, 4-связи): ", 
@@ -294,6 +315,9 @@ namespace BookStore {
       Console.WriteLine("Запись успешно обновлена");
     }
 
+    /// <summary>
+    /// Удаляет запись из базы данных
+    /// </summary>
     private static async Task DeleteData() {
       var tableIndex = InputHelper.GetInt(
         "Выберите таблицу (1-авторы, 2-книги, 3-жанры, 4-связи): ", 
