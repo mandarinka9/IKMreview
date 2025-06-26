@@ -30,10 +30,7 @@ namespace BookStore {
       if (_connection == null) {
         throw new InvalidOperationException("Соединение не инициализировано");
       }
-      using var cmd = new NpgsqlCommand(query, _connection);
-      cmd.Parameters.AddRange(parameters);
-      await cmd.ExecuteNonQueryAsync();
-
+      
       var result = new List<List<object>>();
       using var cmd = new NpgsqlCommand(query, _connection);
 
