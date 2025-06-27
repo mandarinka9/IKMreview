@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Data Display</title>
+    <style>
+
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tcontainer {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .buttons {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .popup {
+            display: flex;
+            width:100%;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 10000;
+            flex-direction: column;
+        }
+
+        .popup-content {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            width: 35%;
+            height: 50%;
+            max-height: 90%;
+            flex-direction: column;
+        }
+
+        .dropdown {
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .input-field {
+            margin-top: 10px;
+            height: 70%;
+        }
+
+        .input-field textarea {
+            width: 97.25%;
+            height: 60%;
+            padding: 8px;
+            font-size: 16px;
+            resize: vertical;
+            overflow-y: auto; 
+        }
+
+        .popup-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .popup-button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .popup-button:hover {
+                background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Display</h1>
+
+        <div class="tools buttons">
+            <a onclick="NewWindow()">Edit</a>
+            <a onclick="NewWindow1()">Add</a>
+        </div>
+
+        <div class="buttons">
+            <a onclick="postData('authors', 0)">Authors</a>
+            <a onclick="postData('genres', 2)">Genres</a>
+            <a onclick="postData('books', 1)">Books</a>
+            <a onclick="postData('book_authors', 3)">Book authors</a>
+        </div>
+        <div class="tcontainer"></div>
+    </div>
+    
+    <script>
+        let titles = [[]]
+        
+        function postData(table, ntable) {
+            const formData = new FormData();
+            fetch(`/gettitles`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => { titles = data })
+
+            fetch(`/get${table}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(document.querySelector('.tcontainer').textContent = 'loading...')
+                .then(response => response.json())
+                .then(data => {
+                    let str = "";
+                    for (let i = 0; i < data.length; i++) {
+                        for (let i1 = 0; i1 < data[i].length; i1++) {
+                            str += data[i][i1];
+                            str += `<h5>(${titles[ntable][i1]})</h5>`;
+                            str += '<br>';
+
+                        }
+                        str += '-----------------------------------------------------------------------<br><br><br>';
+                    }
+
+                    document.querySelector('.tcontainer').innerHTML = str;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        function Selected(event) {
+            fetch(`/gettitles`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => { titles = data })
+            var a = event.target.value;
+            if (a == null) {
+                return;
+            }
+            fetch(`/get${a}`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (document.getElementById('1') != null) {
+                        document.getElementById('1').remove()
+                        if (document.getElementById('2') != null) {
+                            document.getElementById('2').remove()
+                            if (document.querySelector('.input-field') != null) { document.querySelector('.input-field').remove() }
+                        }
+                    }
+                    const dropdownSelect1 = document.createElement('select');
+                    dropdownSelect1.id = '1';
+                    
+                    for (let i = 0; i < data.length; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = data[i];
+                        dropdownSelect1.add(option);
+                        
+                    }
+                    dropdownSelect1.addEventListener('change', (event) => {
+                        var a = event.target.value;
+                        if (document.getElementById('2') != null) {
+                            document.getElementById('2').remove()
+                                if (document.querySelector('.input-field') != null) { document.querySelector('.input-field').remove() }
+                            }
+                        
+                        const dropdownSelect2 = document.createElement('select');
+                        dropdownSelect2.id = '2';
+                        
+                        for (let i = 1; i < data[a].length; i++) {
+                            const option = document.createElement('option');
+                            option.value = i;
+                            option.textContent = data[a][i];
+                            dropdownSelect2.add(option);
+                        }
+                        dropdownSelect2.addEventListener('change', (event1) => {
+                            var a = event1.target.value;
+                            if (document.querySelector('.input-field') != null) {
+                                document.querySelector('.input-field').remove()
+
+                                }
+
+                            const inputFieldContainer = document.createElement('div');
+                            inputFieldContainer.className = 'input-field';
+
+                            const inputField = document.createElement('textarea');
+                            inputField.className = 'inputf';
+                            inputField.textContent = document.getElementById('2').options[document.getElementById('2').value-1].text;
+
+                            inputFieldContainer.appendChild(inputField);
+                            const bContainer = document.createElement('div');
+                            bContainer.className = 'buttons';
+                            bContainer.id = '3';
+                            const aa = document.createElement('a');
+                            aa.textContent = 'Save';
+                            aa.onclick = () => {
+                                console.log(document.getElementById('0').value);
+                                fetch(`/got?a=${document.querySelector('.inputf').value}&i=${document.getElementById('2').value}&uuid=${data[document.getElementById('1').value][0]}&table=${document.getElementById('0').value}`, {
+                                    method: 'POST'
+                                })
+                                   // .then(document.getElementById('0').dispatchEvent(new Event('change', { bubbles: true })))
+                            };
+                            const aa1 = document.createElement('a');
+                            aa1.textContent = 'Delete';
+                            aa1.onclick = () => {
+                                console.log(document.getElementById('0').value);
+                                fetch(`/del?uuid=${data[document.getElementById('1').value][0]}&table=${document.getElementById('0').value}`, {
+                                    method: 'POST'
+                                })
+                                
+                                    //.then(document.getElementById('0').dispatchEvent(new Event('change', { bubbles: true })))
+                            };
+                            bContainer.appendChild(aa);
+                            bContainer.appendChild(aa1);
+                            inputFieldContainer.appendChild(bContainer);
+                            document.querySelector('.popup-content').appendChild(inputFieldContainer);
+
+
+                        });
+
+                        document.querySelector('.popup-content').appendChild(dropdownSelect2);
+                        document.getElementById('2').dispatchEvent(new Event('change', { bubbles: true }));
+
+                        /*const inputFieldContainer = document.createElement('div');
+                        inputFieldContainer.className = 'input-field';
+
+                        const inputField = document.createElement('textarea');
+                        inputField.className = 'inputf';
+                        inputField.textContent = data[a];
+
+                        inputFieldContainer.appendChild(inputField);*/
+
+                    });
+                    document.querySelector('.popup-content').appendChild(dropdownSelect1);
+                    document.getElementById('1').dispatchEvent(new Event('change', { bubbles: true }));
+                    
+
+                });
+                    
+                /*.then(document.querySelector('.inputf').textContent = 'loading...')
+                .then(response => response.text())
+                .then(data => {
+                    document.querySelector('.inputf').textContent = data;
+                })
+                .catch(error => console.error('Error:', error));*/
+        }
+        function NewWindow1() {
+            let c = 0;
+        const popup = document.createElement('div');
+        popup.className = 'popup';
+        popup.id = 'popup';
+
+        const content = document.createElement('div');
+        content.className = 'popup-content';
+
+
+        const selectContainer = document.createElement('div');
+        selectContainer.className = 'select-container';
+
+        const dropdownLabel = document.createElement('label');
+        dropdownLabel.textContent = 'Select table:';
+
+        const dropdownSelect = document.createElement('select');
+        dropdownSelect.innerHTML = `
+        <option value="">Choose an option</option>
+        <option value="authors">Authors</option>
+        <option value="books">Books</option>
+        <option value="genres">Genres</option>
+        <option value="book_authors">Book authors</option>
+    `;
+
+        
+        dropdownSelect.className = "table_selected0";
+        dropdownSelect.id = "00";
+        dropdownSelect.addEventListener('change', (e) => {
+            
+            fetch(`/gettitles`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => { titles = data })
+                .then(() => {
+                    if (e.target.value == 'authors') { c = 0 }
+                    if (e.target.value == 'books') { c = 1 }
+                    if (e.target.value == 'genres') { c = 2 }
+                    if (e.target.value == 'book_authors') { c = 3 }
+                    while (document.querySelector('.inp') != null) {
+                        document.querySelector('.inp').remove();
+                    }
+                    for (let i = 0; i < titles[c].length; i++) {
+                        
+                        const inputField1 = document.createElement('input');
+                        inputField1.type = 'text';
+                        inputField1.className = 'inp';
+                        inputField1.id = `i${i}`
+                        inputField1.value = titles[c][i];
+                        document.querySelector('.popup-content').appendChild(inputField1);
+                    }
+})
+            
+        });
+        selectContainer.appendChild(dropdownLabel);
+        selectContainer.appendChild(dropdownSelect);
+
+
+        const popupFooter = document.createElement('div');
+        popupFooter.className = 'popup-footer';
+
+        const closeBtn = document.createElement('a');
+        closeBtn.textContent = 'Close';
+        closeBtn.onclick = () => {
+            popup.remove();
+            document.body.style.overflow = '';
+        };
+
+        popupFooter.appendChild(closeBtn);
+
+        const ok = document.createElement('a');
+        ok.textContent = 'Add';
+        ok.onclick = () => {
+            let addstr = "";
+            for (let i = 0; i < titles[c].length; i++) {
+                addstr += document.getElementById(`i${i}`).value;
+                addstr += ' ';
+            }
+            popup.remove();
+            fetch(`/add?i=${addstr}&c=${c}`, {
+                method: 'POST'
+            })
+        };
+
+        popupFooter.appendChild(ok);
+
+        content.appendChild(popupFooter);
+        content.appendChild(selectContainer);
+        popup.appendChild(content);
+        document.body.appendChild(popup);
+
+
+        document.body.style.overflow = 'hidden';
+
+
+    }
+    function NewWindow() {
+    const popup = document.createElement('div');
+    popup.className = 'popup';
+    popup.id = 'popup';
+
+    const content = document.createElement('div');
+    content.className = 'popup-content';
+
+    // Create select container
+    const selectContainer = document.createElement('div');
+    selectContainer.className = 'select-container';
+
+    const dropdownLabel = document.createElement('label');
+    dropdownLabel.textContent = 'Select table:';
+
+    const dropdownSelect = document.createElement('select');
+    dropdownSelect.innerHTML = `
+        <option value="">Choose an option</option>
+        <option value="authors">Authors</option>
+        <option value="books">Books</option>
+        <option value="genres">Genres</option>
+        <option value="book_authors">Book authors</option>
+    `;
+
+    selectContainer.appendChild(dropdownLabel);
+    selectContainer.appendChild(dropdownSelect);
+    dropdownSelect.className = "table_selected";
+    dropdownSelect.id = "0";
+    dropdownSelect.addEventListener('change', Selected);
+
+    // Create input field container
+
+
+    // Create popup footer
+    const popupFooter = document.createElement('div');
+    popupFooter.className = 'popup-footer';
+
+    const closeBtn = document.createElement('a');
+    closeBtn.textContent = 'Close';
+    closeBtn.onclick = () => {
+        popup.remove();
+        document.body.style.overflow = '';
+    };
+
+    popupFooter.appendChild(closeBtn);
+
+    // Append elements to content
+    //content.appendChild(selectContainer);
+    //content.appendChild(inputFieldContainer);
+    content.appendChild(popupFooter);
+    content.appendChild(selectContainer);
+    popup.appendChild(content);
+    document.body.appendChild(popup);
+
+    // Prevent scrolling while popup is open
+    document.body.style.overflow = 'hidden';
+
+    // Add event listener for input field
+
+}
+    </script>
+</body>
+</html>
