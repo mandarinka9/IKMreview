@@ -3,12 +3,17 @@ using System.Globalization;
 
 namespace BookStore {
   /// <summary>
-  /// Вспомогательный класс для безопасного ввода данных с консоли
+  /// Класс для валидации и обработки пользовательского ввода
   /// </summary>
   public static class InputHelper {
     /// <summary>
     /// Получает строковый ввод с валидацией
     /// </summary>
+    /// <param name="prompt">Приглашение для ввода</param>
+    /// <param name="required">Обязательность заполнения</param>
+    /// <param name="minLength">Минимальная длина строки</param>
+    /// <param name="maxLength">Максимальная длина строки</param>
+    /// <returns>Введенная строка</returns>
     public static string GetString(string prompt, bool required = true, 
         int minLength = 0, int maxLength = 255) {
       while (true) {
@@ -39,8 +44,12 @@ namespace BookStore {
     }
 
     /// <summary>
-    /// Получает целое число с валидацией
+    /// Получает целое число в заданном диапазоне
     /// </summary>
+    /// <param name="prompt">Приглашение для ввода</param>
+    /// <param name="min">Минимальное допустимое значение</param>
+    /// <param name="max">Максимальное допустимое значение</param>
+    /// <returns>Введенное целое число</returns>
     public static int GetInt(string prompt, int min = int.MinValue, 
         int max = int.MaxValue) {
       while (true) {
@@ -58,8 +67,11 @@ namespace BookStore {
     }
 
     /// <summary>
-    /// Получает дату с валидацией
+    /// Получает дату в указанном формате
     /// </summary>
+    /// <param name="prompt">Приглашение для ввода</param>
+    /// <param name="format">Формат даты</param>
+    /// <returns>Введенная дата</returns>
     public static DateTime GetDate(string prompt, 
         string format = "dd.MM.yyyy") {
       while (true) {
@@ -77,6 +89,8 @@ namespace BookStore {
     /// <summary>
     /// Получает булево значение (да/нет)
     /// </summary>
+    /// <param name="prompt">Приглашение для ввода</param>
+    /// <returns>Введенное булево значение</returns>
     public static bool GetBool(string prompt) {
       while (true) {
         Console.Write(prompt + " (y/n/да/нет): ");
@@ -93,6 +107,8 @@ namespace BookStore {
     /// <summary>
     /// Получает GUID с валидацией
     /// </summary>
+    /// <param name="prompt">Приглашение для ввода</param>
+    /// <returns>Введенный GUID</returns>
     public static Guid GetGuid(string prompt) {
       while (true) {
         Console.Write(prompt);
@@ -107,6 +123,9 @@ namespace BookStore {
     /// <summary>
     /// Получает значение из ограниченного набора вариантов
     /// </summary>
+    /// <param name="prompt">Приглашение для ввода</param>
+    /// <param name="options">Допустимые варианты выбора</param>
+     /// <returns>Выбранный вариант</returns>
     public static string GetOption(string prompt, params string[] options) {
       while (true) {
         Console.Write(prompt);
