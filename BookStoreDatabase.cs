@@ -2,7 +2,7 @@ using Npgsql;
 
 namespace BookStore {
   /// <summary>
-  /// Сервис для работы с базой данных книжного магазина
+  /// Класс для работы с базой данных книжного магазина
   /// </summary>
   public static class BookStoreDatabase {
     private static NpgsqlConnection? _connection;
@@ -10,6 +10,7 @@ namespace BookStore {
     /// <summary>
     /// Инициализирует подключение к базе данных
     /// </summary>
+    /// <param name="connectionString">Строка подключения к базе данных</param>
     public static async Task InitializeAsync(string connectionString) {
       try {
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
@@ -24,8 +25,10 @@ namespace BookStore {
     }
 
     /// <summary>
-    /// Выполняет запрос и возвращает данные
+    /// Выполняет SQL-запрос и возвращает результат
     /// </summary>
+    /// <param name="query">SQL-запрос для выполнения</param>
+    /// <returns>Список строк с результатами запроса</returns>
     public static async Task<List<List<object>>> ExecuteQueryAsync(string query) {
       if (_connection == null) {
         throw new InvalidOperationException("Соединение не инициализировано");
@@ -46,8 +49,9 @@ namespace BookStore {
     }
 
     /// <summary>
-    /// Выполняет команду без возврата данных
+    /// Выполняет SQL-команду без возврата данных
     /// </summary>
+    /// <param name="query">SQL-команда для выполнения</param>
     public static async Task ExecuteCommandAsync(string query) {
       if (_connection == null) {
         throw new InvalidOperationException("Соединение не инициализировано");
@@ -57,7 +61,7 @@ namespace BookStore {
     }
 
     /// <summary>
-    /// Выполняет закрытие базы данных
+    /// Закрывает соединение с базой данных
     /// </summary>
     public static async Task CloseConnectionAsync() {
     if (_connection != null) {
